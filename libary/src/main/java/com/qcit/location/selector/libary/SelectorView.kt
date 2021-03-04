@@ -1,0 +1,212 @@
+package com.qcit.location.selector.libary
+
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.os.Bundle
+import android.util.AttributeSet
+import android.view.View
+import android.widget.*
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.amap.api.location.AMapLocationClient
+import com.amap.api.location.AMapLocationClientOption
+import com.amap.api.maps2d.AMap
+import com.amap.api.maps2d.CameraUpdateFactory
+import com.amap.api.maps2d.model.CameraPosition
+import com.amap.api.maps2d.model.LatLng
+import com.amap.api.maps2d.model.LatLngBounds
+import com.amap.api.services.core.AMapException
+import com.amap.api.services.core.LatLonPoint
+import com.amap.api.services.core.PoiItem
+import com.amap.api.services.poisearch.PoiResult
+import com.amap.api.services.poisearch.PoiSearch
+import com.qcit.location.selector.libary.adapter.LocationSearchAdapter
+import com.qcit.location.selector.libary.utils.KeybordUtil
+import com.yanzhenjie.permission.AndPermission
+import com.yanzhenjie.permission.runtime.Permission
+import kotlinx.android.synthetic.main.view_selector.view.*
+
+class SelectorView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener {
+    private var activity: Activity? = null
+    private var amap: AMap? = null
+    private var adapter: LocationSearchAdapter? = null
+
+    var listenForChanges = true
+    fun create(savedInstanceState: Bundle?) {
+        mapview.onCreate(savedInstanceState)
+        amap = mapview.map
+        amap?.moveCamera(CameraUpdateFactory.zoomTo(18f))
+        amap?.uiSettings?.isMyLocationButtonEnabled = true
+        amap?.isMyLocationEnabled = true
+        amap?.uiSettings?.isZoomControlsEnabled = false
+        amap?.uiSettings?.isScaleControlsEnabled = false
+        amap?.setOnMapTouchListener { showAroundList(false) }
+        amap?.setOnCameraChangeListener(object : AMap.OnCameraChangeListener{
+            override fun onCameraChange(p0: CameraPosition?) {}
+            override fun onCameraChangeFinish(position: CameraPosition?) {
+                var latlon=LatLng(position?.target?.latitude!!,position?.target?.longitude!!)
+                doAroundSearch(latlon)
+            }
+        })
+    }
+
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+        var view = inflate(context, R.layout.view_selector, this)
+        activity = getActivityFromView()
+        aroundList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        adapter = LocationSearchAdapter()
+        adapter?.onItemClickedListener = this
+        aroundList.adapter = adapter
+        requestLocationPermission()
+        editSearch.doAfterTextChanged { if (listenForChanges) doQuerySearchInCity(editSearch.text.toString()) }
+        rl_bottom.setOnClickListener { if(isArounfListShowing()){showAroundList(false)}else showAroundList(true) }
+    }
+
+    fun doAroundSearch(latlon: LatLng) {
+        var query = PoiSearch.Query("", "", "")
+        query.cityLimit = true
+        query.pageSize = 200
+        query.pageNum = 0
+        var poiSearch = PoiSearch(context, query)
+        poiSearch.setOnPoiSearchListener(object : PoiSearch.OnPoiSearchListener {
+            override fun onPoiSearched(poiResult: PoiResult?, resultCode: Int) {
+                if (resultCode == AMapException.CODE_AMAP_SUCCESS) {
+                    if (poiResult != null && poiResult.getQuery() != null) {
+                        if (poiResult.query == query) {
+                            var poiItems = poiResult.pois
+                            adapter?.data = poiItems
+                            adapter?.notifyDataSetChanged()
+                            if(adapter?.hasData() == true){
+                                showAroundList(true)
+                            }
+                            aroundList.smoothScrollToPosition(0)
+                        }
+                    }
+                }
+            }
+
+            override fun onPoiItemSearched(p0: PoiItem?, p1: Int) {}
+        })
+        poiSearch.setBound(
+            PoiSearch.SearchBound(
+                LatLonPoint(latlon.latitude, latlon.longitude),
+                1000,
+                true
+            )
+        )
+        poiSearch.searchPOIAsyn()
+    }
+
+
+    fun doQuerySearchInCity(key: String) {
+        var query = PoiSearch.Query(key, "", "青岛市")
+        query.pageSize = 100
+        var poiSearch = PoiSearch(context, query)
+        poiSearch.setOnPoiSearchListener(object : PoiSearch.OnPoiSearchListener {
+            override fun onPoiSearched(result: PoiResult?, p1: Int) {
+                if (p1 == AMapException.CODE_AMAP_SUCCESS) {
+                    if (result != null && result.query != null) {
+                        val poiItems: List<PoiItem> = result.pois
+                        showListPop(poiItems)
+                    }
+                }
+            }
+
+            override fun onPoiItemSearched(p0: PoiItem?, p1: Int) {}
+        })
+        poiSearch.searchPOIAsyn()
+    }
+
+    fun showListPop(lst: List<PoiItem>) {
+        var listpopwin = ListPopupWindow(activity!!)
+        var lst_title = lst.map { it.title }
+        listpopwin.setAdapter(
+            ArrayAdapter<String>(
+                context,
+                android.R.layout.simple_list_item_1,
+                lst_title
+            )
+        )
+        listpopwin.anchorView = editSearch
+        listpopwin.isModal = true
+        listpopwin.setOnItemClickListener { parent, view, position, id ->
+            var item = lst.get(position)
+            listenForChanges = false;
+            editSearch.setText(item.title, TextView.BufferType.EDITABLE)
+            listenForChanges = true;
+            cameraTo(LatLng(item.latLonPoint.latitude, item.latLonPoint.longitude))
+            listpopwin.dismiss()
+            KeybordUtil.hideKeyboard(activity)
+            doAroundSearch(LatLng(item.latLonPoint.latitude, item.latLonPoint.longitude))
+        }
+        listpopwin.show()
+        editSearch.requestFocus()
+    }
+
+    fun getActivityFromView(): Activity? {
+        var context: Context? = this.context
+        while (context is ContextWrapper) {
+            if (context is Activity) {
+                return context
+            }
+            context = context.baseContext
+        }
+        return null
+    }
+
+    fun requestLocationPermission() {
+        AndPermission.with(context)
+            .runtime()
+            .permission(Permission.Group.LOCATION)
+            .onGranted {
+                startLocalMe()
+            }
+            .onDenied {
+                Toast.makeText(activity, "获取权限失败", Toast.LENGTH_SHORT).show()
+            }
+            .start()
+    }
+
+    private fun startLocalMe() {
+        var mLocationClient = AMapLocationClient(context)
+        var option = AMapLocationClientOption()
+        option.isOnceLocation = true
+        mLocationClient.setLocationListener {
+            cameraTo(LatLng(it.latitude, it.longitude))
+        }
+    }
+
+    fun cameraTo(latlng: LatLng) {
+        val b = LatLngBounds.builder()
+        b.include(latlng)
+        amap?.animateCamera(CameraUpdateFactory.newLatLngBounds(b.build(), 100))
+    }
+
+    var around_show=false
+    fun showAroundList(show:Boolean){
+        if(show){
+            if(around_show)return
+            around_show=true
+            aroundList.visibility= View.VISIBLE
+            ivExport.setImageResource(R.drawable.ic_arrow_down)
+        }
+        if(!show){
+            if(!around_show)return
+            around_show=false
+            aroundList.visibility= View.GONE
+            ivExport.setImageResource(R.drawable.ic_arrow_up)
+        }
+    }
+    fun isArounfListShowing():Boolean{
+        return around_show
+    }
+    override fun OnItemClicked(position: Int, poiItem: PoiItem?) {
+        var lat = poiItem?.latLonPoint?.latitude
+        var lon = poiItem?.latLonPoint?.longitude
+        var latlon = LatLng(lat!!, lon!!);
+        cameraTo(latlon)
+        doAroundSearch(latlon)
+    }
+}
