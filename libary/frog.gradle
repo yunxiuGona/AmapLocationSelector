@@ -4,7 +4,7 @@ apply plugin: 'com.jfrog.bintray'
 def siteUrl = 'https://github.com/15563988825/AmapLocationSelector/tree/master/libary' // 项目主页。
 def gitUrl = 'https://github.com/15563988825/AmapLocationSelector.git' // Git仓库的url。
 
-group = "com.qcit"
+group = "com.qcit.mapselector"
 
 version = "0.1"
 
@@ -78,8 +78,8 @@ bintray {
 
     configurations = ['archives']
     pkg {
-        repo = "AmapSelector"  //Repository名字 需要自己在bintray网站上先添加
-        name = "AmapSelector"// 发布到Bintray上的项目名字,你在bintray网站上新建的包名
+        repo = "maven"  //Repository名字 需要自己在bintray网站上先添加
+        name = "amapLocationSelector"// 发布到Bintray上的项目名字,你在bintray网站上新建的包名
         userOrg = '15563988825'//Bintray的组织id，可以填写的你的开发者的id
         websiteUrl = siteUrl
         vcsUrl = gitUrl

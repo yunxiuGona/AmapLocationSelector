@@ -28,12 +28,13 @@ import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.runtime.Permission
 import kotlinx.android.synthetic.main.view_selector.view.*
 
-class SelectorView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener {
+class LocationSelectorView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener {
     private var activity: Activity? = null
     private var amap: AMap? = null
     private var adapter: LocationSearchAdapter? = null
 
     var listenForChanges = true
+    var location: Location? = null
     fun create(savedInstanceState: Bundle?) {
         mapview.onCreate(savedInstanceState)
         amap = mapview.map
@@ -43,13 +44,19 @@ class SelectorView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener
         amap?.uiSettings?.isZoomControlsEnabled = false
         amap?.uiSettings?.isScaleControlsEnabled = false
         amap?.setOnMapTouchListener { showAroundList(false) }
-        amap?.setOnCameraChangeListener(object : AMap.OnCameraChangeListener{
+        amap?.setOnCameraChangeListener(object : AMap.OnCameraChangeListener {
             override fun onCameraChange(p0: CameraPosition?) {}
             override fun onCameraChangeFinish(position: CameraPosition?) {
-                var latlon=LatLng(position?.target?.latitude!!,position?.target?.longitude!!)
+                var latlon = LatLng(position?.target?.latitude!!, position?.target?.longitude!!)
                 doAroundSearch(latlon)
             }
         })
+    }
+
+
+
+    public fun getSelectedLocation(): Location? {
+        return location
     }
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
@@ -61,7 +68,11 @@ class SelectorView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener
         aroundList.adapter = adapter
         requestLocationPermission()
         editSearch.doAfterTextChanged { if (listenForChanges) doQuerySearchInCity(editSearch.text.toString()) }
-        rl_bottom.setOnClickListener { if(isArounfListShowing()){showAroundList(false)}else showAroundList(true) }
+        rl_bottom.setOnClickListener {
+            if (isArounfListShowing()) {
+                showAroundList(false)
+            } else showAroundList(true)
+        }
     }
 
     fun doAroundSearch(latlon: LatLng) {
@@ -78,7 +89,7 @@ class SelectorView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener
                             var poiItems = poiResult.pois
                             adapter?.data = poiItems
                             adapter?.notifyDataSetChanged()
-                            if(adapter?.hasData() == true){
+                            if (adapter?.hasData() == true) {
                                 showAroundList(true)
                             }
                             aroundList.smoothScrollToPosition(0)
@@ -174,6 +185,23 @@ class SelectorView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener
         var option = AMapLocationClientOption()
         option.isOnceLocation = true
         mLocationClient.setLocationListener {
+            var location: Location = Location()
+            location.latitude = it.latitude
+            location.longitude = it.longitude
+            location.poiName = it.poiName
+            location.address = it.address
+            location.adCode = it.adCode
+            location.province = it.province
+            location.city = it.city
+            location.cityCode = it.cityCode
+            location.aoiName = it.aoiName
+            location.country = it.country
+            location.description = it.description
+            location.street = it.street
+            location.streetNum = it.streetNum
+            location.locationDetail = it.locationDetail
+            location.buildingId = it.buildingId
+            location.time = it.time
             cameraTo(LatLng(it.latitude, it.longitude))
         }
     }
@@ -184,28 +212,51 @@ class SelectorView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener
         amap?.animateCamera(CameraUpdateFactory.newLatLngBounds(b.build(), 100))
     }
 
-    var around_show=false
-    fun showAroundList(show:Boolean){
-        if(show){
-            if(around_show)return
-            around_show=true
-            aroundList.visibility= View.VISIBLE
+    var around_show = false
+    fun showAroundList(show: Boolean) {
+        if (show) {
+            if (around_show) return
+            around_show = true
+            aroundList.visibility = View.VISIBLE
             ivExport.setImageResource(R.drawable.ic_arrow_down)
         }
-        if(!show){
-            if(!around_show)return
-            around_show=false
-            aroundList.visibility= View.GONE
+        if (!show) {
+            if (!around_show) return
+            around_show = false
+            aroundList.visibility = View.GONE
             ivExport.setImageResource(R.drawable.ic_arrow_up)
         }
     }
-    fun isArounfListShowing():Boolean{
+
+    fun isArounfListShowing(): Boolean {
         return around_show
     }
+
     override fun OnItemClicked(position: Int, poiItem: PoiItem?) {
         var lat = poiItem?.latLonPoint?.latitude
         var lon = poiItem?.latLonPoint?.longitude
         var latlon = LatLng(lat!!, lon!!);
+
+        poiItem.let {
+            var location: Location = Location()
+            location.latitude = it?.latLonPoint!!.latitude
+            location.longitude = it.latLonPoint!!.longitude
+            location.poiName = it.title
+            location.address = it.snippet
+            location.adCode = it.adCode
+            location.province = it.provinceName
+            location.city = it.cityName
+            location.cityCode = it.cityCode
+            location.aoiName = it.adName
+            location.country = ""
+            location.description = ""
+            location.street = ""
+            location.streetNum = ""
+            location.locationDetail = ""
+            location.buildingId = ""
+            location.time = 0L
+        }
+
         cameraTo(latlon)
         doAroundSearch(latlon)
     }

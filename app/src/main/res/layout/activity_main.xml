@@ -6,10 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.qcit.location.selector.libary.SelectorView
+    <com.qcit.location.selector.libary.LocationSelectorView
         android:id="@+id/selectorView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </com.qcit.location.selector.libary.SelectorView>
+    </com.qcit.location.selector.libary.LocationSelectorView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
