@@ -78,7 +78,7 @@ bintray {
 
     configurations = ['archives']
     pkg {
-        repo = "maven"  //Repository名字 需要自己在bintray网站上先添加
+        repo = "qcitMaven"  //Repository名字 需要自己在bintray网站上先添加
         name = "amapLocationSelector"// 发布到Bintray上的项目名字,你在bintray网站上新建的包名
         userOrg = '15563988825'//Bintray的组织id，可以填写的你的开发者的id
         websiteUrl = siteUrl
