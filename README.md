@@ -7,7 +7,7 @@
 
 1、主项目的Geadle文件中
 ```
-implementation 'com.qcit.mapselector:libary:0.1'
+implementation 'com.qcit.mapselector:libary:0.2'
 ```
 
 2、
@@ -22,21 +22,21 @@ implementation 'com.qcit.mapselector:libary:0.1'
  3、
  layout中View
  ```
- <com.qcit.location.selector.libary.LocationSelectorView
-        android:id="@+id/selectorView"
+ <com.qcit.location.selector.libary.LocationSelectView
+        android:id="@+id/selectView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </com.qcit.location.selector.libary.LocationSelectorView>
+    </com.qcit.location.selector.libary.LocationSelectView>
 ```
  4、
  Activity或者Fragment的onCreate函数中
  ```
- selectorView.create(savedInstanceState);
+ selectView.create(savedInstanceState);
  ```
  
  5、获取选中的地址信息
  ```
- selectorView.getSelectedLocation()
+ selectView.getSelectedLocation()
  ```
 
 
