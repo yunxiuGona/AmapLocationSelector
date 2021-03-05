@@ -39,8 +39,8 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
         mapview.onCreate(savedInstanceState)
         amap = mapview.map
         amap?.moveCamera(CameraUpdateFactory.zoomTo(18f))
-        amap?.uiSettings?.isMyLocationButtonEnabled = true
         amap?.isMyLocationEnabled = true
+        amap?.uiSettings?.isMyLocationButtonEnabled=false
         amap?.uiSettings?.isZoomControlsEnabled = false
         amap?.uiSettings?.isScaleControlsEnabled = false
         amap?.setOnMapTouchListener { showAroundList(false) }
@@ -72,6 +72,7 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
                 showAroundList(false)
             } else showAroundList(true)
         }
+        rlMineLocation.setOnClickListener { cameraTo(LatLng(amap?.myLocation?.latitude!!,amap?.myLocation?.longitude!!)) }
     }
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) { init() }

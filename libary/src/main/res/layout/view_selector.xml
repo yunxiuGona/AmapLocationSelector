@@ -32,6 +32,24 @@
         android:textSize="14dp" />
 
     <RelativeLayout
+        android:id="@+id/rlMineLocation"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/back_mine_location"
+        android:layout_below="@+id/editSearch"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_location_mine"></ImageView>
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/rl_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
