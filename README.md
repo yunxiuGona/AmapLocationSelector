@@ -17,6 +17,7 @@ implementation 'com.qcit.mapselector:libary:0.2'
           <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="高德APPKey"/>
+</application>     
 ```
             
  3、
