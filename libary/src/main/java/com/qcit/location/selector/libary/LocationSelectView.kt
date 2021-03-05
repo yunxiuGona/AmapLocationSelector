@@ -28,7 +28,7 @@ import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.runtime.Permission
 import kotlinx.android.synthetic.main.view_selector.view.*
 
-class LocationSelectorView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener {
+class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener {
     private var activity: Activity? = null
     private var amap: AMap? = null
     private var adapter: LocationSearchAdapter? = null
@@ -54,12 +54,11 @@ class LocationSelectorView : RelativeLayout, LocationSearchAdapter.OnItemClicked
     }
 
 
-
     public fun getSelectedLocation(): Location? {
         return location
     }
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+    fun init() {
         var view = inflate(context, R.layout.view_selector, this)
         activity = getActivityFromView()
         aroundList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -74,6 +73,13 @@ class LocationSelectorView : RelativeLayout, LocationSearchAdapter.OnItemClicked
             } else showAroundList(true)
         }
     }
+
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) { init() }
+    constructor(context: Context?) : super(context){init()}
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr){init()}
+    constructor(
+        context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
+    ) : super(context, attrs, defStyleAttr, defStyleRes){init()}
 
     fun doAroundSearch(latlon: LatLng) {
         var query = PoiSearch.Query("", "", "")
