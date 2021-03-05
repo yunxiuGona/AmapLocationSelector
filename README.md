@@ -4,8 +4,8 @@
 高德地图控制台注册应用，且获取APPKey
 请参照：https://developer.amap.com/api/android-sdk/guide/create-project/get-key
 
-![https://github.com/15563988825/AmapLocationSelector/blob/master/screenShot/device-2021-03-05-110729.png]
-
+![](https://github.com/15563988825/AmapLocationSelector/blob/master/screenShot/device-2021-03-05-110729.png)
+![](https://github.com/15563988825/AmapLocationSelector/blob/master/screenShot/device-2021-03-05-110806.png)
 1、主项目的Geadle文件中
 ```
 implementation 'com.qcit.mapselector:libary:0.1'
