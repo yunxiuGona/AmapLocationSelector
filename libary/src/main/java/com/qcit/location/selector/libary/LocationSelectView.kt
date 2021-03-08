@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.*
 import androidx.core.widget.doAfterTextChanged
@@ -25,6 +26,7 @@ import com.amap.api.services.core.PoiItem
 import com.amap.api.services.poisearch.PoiResult
 import com.amap.api.services.poisearch.PoiSearch
 import com.qcit.location.selector.libary.adapter.LocationSearchAdapter
+import com.qcit.location.selector.libary.models.City
 import com.qcit.location.selector.libary.utils.ExcelUtils
 import com.qcit.location.selector.libary.utils.KeybordUtil
 import com.qcit.location.selector.libary.utils.PingYinUtil
@@ -32,7 +34,8 @@ import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.runtime.Permission
 import kotlinx.android.synthetic.main.view_selector.view.*
 
-class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener {
+class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener,
+    OnCityClickedListener {
     private var activity: Activity? = null
     private var amap: AMap? = null
     private var adapter: LocationSearchAdapter? = null
@@ -89,6 +92,7 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
             )
         }
         citySelectView.visibility = View.GONE
+        citySelectView?.onCityClickedListener = this
         rl_city.setOnClickListener {
             if (citySelectView.visibility == View.GONE) citySelectView.visibility = View.VISIBLE
         }
@@ -158,7 +162,7 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
 
 
     fun doQuerySearchInCity(key: String) {
-        var query = PoiSearch.Query(key, "", "青岛市")
+        var query = PoiSearch.Query(key, "", tv_city.text.toString())
         query.pageSize = 100
         var poiSearch = PoiSearch(context, query)
         poiSearch.setOnPoiSearchListener(object : PoiSearch.OnPoiSearchListener {
@@ -309,5 +313,20 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
 
         cameraTo(latlon)
         doAroundSearch(latlon)
+    }
+
+    fun onBack(): Boolean {
+        if (citySelectView.visibility == View.VISIBLE) {
+            citySelectView.visibility = View.GONE
+            return true
+        }
+        return false
+    }
+
+    override fun OnCityClicked(city: City) {
+        if (citySelectView.visibility == View.VISIBLE) {
+            citySelectView.visibility = View.GONE
+        }
+        tv_city.text = city.name
     }
 }

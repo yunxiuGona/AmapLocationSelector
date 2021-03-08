@@ -11,4 +11,10 @@ class MainActivity : AppCompatActivity() {
         selectorView.create(savedInstanceState);
         selectorView.getSelectedLocation()
     }
+
+    override fun onBackPressed() {
+        if(selectorView.onBack()){}else{
+            super.onBackPressed()
+        }
+    }
 }

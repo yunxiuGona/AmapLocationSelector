@@ -5,14 +5,18 @@ import android.util.AttributeSet
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.qcit.location.selector.libary.adapter.CitySelectAdapter
+import com.qcit.location.selector.libary.models.City
 import com.qcit.location.selector.libary.utils.ExcelUtils
 import com.qcit.location.selector.libary.utils.PingYinUtil
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.view_citys.view.*
 
 
-class CitySelectView : RelativeLayout {
+class CitySelectView : RelativeLayout, OnCityClickedListener {
 
+    var onCityClickedListener:OnCityClickedListener?=null
+        set(value) {field=value}
+        get() = field
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
         init()
     }
@@ -48,5 +52,11 @@ class CitySelectView : RelativeLayout {
         rcv_list.adapter = adapter
         rcv_list.layoutManager = LinearLayoutManager(context)
         adapter?.notifyDataSetChanged()
+        adapter?.onCityClickedListener=this
     }
+
+    override fun OnCityClicked(city: City) {
+        onCityClickedListener?.OnCityClicked(city)
+    }
+
 }

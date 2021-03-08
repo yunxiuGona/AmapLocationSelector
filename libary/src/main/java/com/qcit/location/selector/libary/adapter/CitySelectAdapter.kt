@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.qcit.location.selector.libary.OnCityClickedListener
 import com.qcit.location.selector.libary.R
 import com.qcit.location.selector.libary.models.City
 import java.util.*
@@ -35,6 +36,11 @@ class CitySelectAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         "Y",
         "Z"
     )
+    var onCityClickedListener: OnCityClickedListener? = null
+        set(value) {
+            field = value
+        }
+        get() = field
     var citys = mutableListOf<City>()
         set(value) {
             field = processData(value)
@@ -84,6 +90,13 @@ class CitySelectAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
         if (holder is ItemHolder) {
             holder.tvTitle.text = getItem(position).name
+            holder.itemView.setOnClickListener {
+                onCityClickedListener?.OnCityClicked(
+                    getItem(
+                        position
+                    )
+                )
+            }
         }
     }
 
