@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if(selectorView.onBack()){}else{
+        if(!selectorView.onBack()){
             super.onBackPressed()
         }
     }

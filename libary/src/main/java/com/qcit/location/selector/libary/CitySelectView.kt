@@ -8,7 +8,6 @@ import com.qcit.location.selector.libary.adapter.CitySelectAdapter
 import com.qcit.location.selector.libary.models.City
 import com.qcit.location.selector.libary.utils.ExcelUtils
 import com.qcit.location.selector.libary.utils.PingYinUtil
-import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.view_citys.view.*
 
 
