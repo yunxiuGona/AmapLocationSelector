@@ -7,7 +7,7 @@
 
 1、主项目的Geadle文件中
 ```
-implementation 'com.qcit.mapselector:libary:0.3'
+implementation 'com.qcit.mapselector:libary:0.4'
 ```
 
 2、
