@@ -7,7 +7,7 @@
 
 1、主项目的Geadle文件中
 ```
-implementation 'com.qcit.mapselector:libary:0.3'
+implementation 'com.qcit.mapselector:libary:0.4'
 ```
 
 2、
@@ -39,7 +39,15 @@ implementation 'com.qcit.mapselector:libary:0.3'
  ```
  selectView.getSelectedLocation()
  ```
+6、In your main activity or fragment
+ ```
+ override fun onBackPressed() {
+        if(!selectorView.onBack()){
+            super.onBackPressed()
+        }
+    }
+ ```
 
-
-![](https://github.com/15563988825/AmapLocationSelector/blob/master/screenShot/device-2021-03-05-110729.png)
-![](https://github.com/15563988825/AmapLocationSelector/blob/master/screenShot/device-2021-03-05-110806.png)
+![](https://github.com/15563988825/AmapLocationSelector/blob/master/screenShot/device-2021-03-08-154929.png)
+![](https://github.com/15563988825/AmapLocationSelector/blob/master/screenShot/device-2021-03-08-154949.png)
+![](https://github.com/15563988825/AmapLocationSelector/blob/master/screenShot/device-2021-03-08-155018.png)
