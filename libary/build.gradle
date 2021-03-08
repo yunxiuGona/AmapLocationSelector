@@ -44,11 +44,15 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation files('libs/amap.jar')
+    implementation files('libs/jxl.jar')
+    implementation files('libs/pinyin4j-2.5.0.jar')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     embed 'com.yanzhenjie:permission:2.0.3'
+    embed 'com.timehop.stickyheadersrecyclerview:library:0.4.3@aar'
+    embed 'com.android.support:recyclerview-v7:27.1.1'
 }
 
 apply from: 'frog.gradle'

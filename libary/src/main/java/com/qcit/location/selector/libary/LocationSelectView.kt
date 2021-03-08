@@ -3,8 +3,10 @@ package com.qcit.location.selector.libary
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.core.widget.doAfterTextChanged
@@ -23,7 +25,9 @@ import com.amap.api.services.core.PoiItem
 import com.amap.api.services.poisearch.PoiResult
 import com.amap.api.services.poisearch.PoiSearch
 import com.qcit.location.selector.libary.adapter.LocationSearchAdapter
+import com.qcit.location.selector.libary.utils.ExcelUtils
 import com.qcit.location.selector.libary.utils.KeybordUtil
+import com.qcit.location.selector.libary.utils.PingYinUtil
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.runtime.Permission
 import kotlinx.android.synthetic.main.view_selector.view.*
@@ -35,12 +39,16 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
 
     var listenForChanges = true
     var location: Location? = null
+
+    var citycode: String? = null
+    var cityname: String? = null
+
     fun create(savedInstanceState: Bundle?) {
         mapview.onCreate(savedInstanceState)
         amap = mapview.map
         amap?.moveCamera(CameraUpdateFactory.zoomTo(18f))
         amap?.isMyLocationEnabled = true
-        amap?.uiSettings?.isMyLocationButtonEnabled=false
+        amap?.uiSettings?.isMyLocationButtonEnabled = false
         amap?.uiSettings?.isZoomControlsEnabled = false
         amap?.uiSettings?.isScaleControlsEnabled = false
         amap?.setOnMapTouchListener { showAroundList(false) }
@@ -72,15 +80,41 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
                 showAroundList(false)
             } else showAroundList(true)
         }
-        rlMineLocation.setOnClickListener { cameraTo(LatLng(amap?.myLocation?.latitude!!,amap?.myLocation?.longitude!!)) }
+        rlMineLocation.setOnClickListener {
+            cameraTo(
+                LatLng(
+                    amap?.myLocation?.latitude!!,
+                    amap?.myLocation?.longitude!!
+                )
+            )
+        }
+        citySelectView.visibility = View.GONE
+        rl_city.setOnClickListener {
+            if (citySelectView.visibility == View.GONE) citySelectView.visibility = View.VISIBLE
+        }
     }
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) { init() }
-    constructor(context: Context?) : super(context){init()}
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr){init()}
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+        init()
+    }
+
+    constructor(context: Context?) : super(context) {
+        init()
+    }
+
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init()
+    }
+
     constructor(
         context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
-    ) : super(context, attrs, defStyleAttr, defStyleRes){init()}
+    ) : super(context, attrs, defStyleAttr, defStyleRes) {
+        init()
+    }
 
     fun doAroundSearch(latlon: LatLng) {
         var query = PoiSearch.Query("", "", "")
@@ -94,6 +128,11 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
                     if (poiResult != null && poiResult.getQuery() != null) {
                         if (poiResult.query == query) {
                             var poiItems = poiResult.pois
+                            if (poiItems != null && poiItems.size > 0) {
+                                tv_city.setText(poiItems.get(0).cityName)
+                                cityname = poiItems.get(0).cityName
+                                citycode = poiItems.get(0).cityCode
+                            }
                             adapter?.data = poiItems
                             adapter?.notifyDataSetChanged()
                             if (adapter?.hasData() == true) {
@@ -192,6 +231,10 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
         var option = AMapLocationClientOption()
         option.isOnceLocation = true
         mLocationClient.setLocationListener {
+            tv_city.setText(it.city)
+            cityname = it.city
+            citycode = it.cityCode
+
             var location: Location = Location()
             location.latitude = it.latitude
             location.longitude = it.longitude

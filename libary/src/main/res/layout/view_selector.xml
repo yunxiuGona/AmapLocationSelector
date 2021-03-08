@@ -17,29 +17,69 @@
         android:scaleType="fitXY"
         android:src="@drawable/pin_icon" />
 
-    <EditText
-        android:id="@+id/editSearch"
+    <RelativeLayout
+        android:id="@+id/rl_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_margin="10dp"
-        android:background="@drawable/edit_back"
-        android:hint="输入地址搜索"
-        android:padding="12dp"
-        android:singleLine="true"
-        android:textColor="#333333"
-        android:textColorHint="#DDDDDD"
-        android:textSize="14dp" />
+        android:layout_margin="10dp">
+
+
+        <RelativeLayout
+            android:id="@+id/rl_city"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/icon_city"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_city"></ImageView>
+
+            <TextView
+                android:id="@+id/tv_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/icon_city"
+                android:maxWidth="80dp"
+                android:textSize="12dp"
+                android:textColor="#777777"
+                android:singleLine="true"
+                android:text="青岛市"></TextView>
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/editSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/rl_city"
+            android:background="@drawable/edit_back"
+            android:hint="输入地址搜索"
+            android:padding="12dp"
+            android:singleLine="true"
+            android:textColor="#333333"
+            android:textColorHint="#DDDDDD"
+            android:textSize="14dp" />
+
+    </RelativeLayout>
+
 
     <RelativeLayout
         android:id="@+id/rlMineLocation"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:background="@drawable/back_mine_location"
-        android:layout_below="@+id/editSearch"
+        android:layout_below="@+id/rl_toolbar"
         android:layout_alignParentRight="true"
         android:layout_marginTop="20dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:background="@drawable/back_mine_location">
 
         <ImageView
             android:layout_width="20dp"
@@ -76,4 +116,12 @@
             android:layout_below="@+id/rlExport"
             android:visibility="gone" />
     </RelativeLayout>
+
+    <com.qcit.location.selector.libary.CitySelectView
+        android:id="@+id/citySelectView"
+        android:visibility="gone"
+        android:background="#FFFFFF"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </com.qcit.location.selector.libary.CitySelectView>
 </RelativeLayout>
