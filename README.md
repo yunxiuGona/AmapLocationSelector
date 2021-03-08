@@ -2,8 +2,8 @@
 AMAP location selectoe
 
 # AmapLocationSelector
-高德地图控制台注册应用，且获取APPKey
-请参照：https://developer.amap.com/api/android-sdk/guide/create-project/get-key
+高德地图控制台注册应用，并获取APPKey<br>
+请参照：<a href="https://developer.amap.com/api/android-sdk/guide/create-project/get-key">高德地图SDK申请Key</a>
 
 
 1、主Module的 gradle 文件中.
