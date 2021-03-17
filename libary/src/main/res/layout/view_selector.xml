@@ -24,9 +24,6 @@
         android:layout_alignParentTop="true"
         android:layout_margin="10dp">
 
-
-
-
         <AutoCompleteTextView
             android:id="@+id/editSearch"
             android:layout_width="match_parent"

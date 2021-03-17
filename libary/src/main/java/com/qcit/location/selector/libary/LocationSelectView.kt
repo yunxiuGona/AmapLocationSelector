@@ -5,9 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Bundle
-import android.os.Handler
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
@@ -25,14 +23,13 @@ import com.amap.api.services.core.LatLonPoint
 import com.amap.api.services.core.PoiItem
 import com.amap.api.services.poisearch.PoiResult
 import com.amap.api.services.poisearch.PoiSearch
+import com.qcit.location.selector.libary.adapter.KMAdapter
 import com.qcit.location.selector.libary.adapter.LocationSearchAdapter
 import com.qcit.location.selector.libary.models.City
 import com.qcit.location.selector.libary.utils.KeybordUtil
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.runtime.Permission
 import kotlinx.android.synthetic.main.view_selector.view.*
-import java.util.*
-
 
 class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener,
         OnCityClickedListener {
@@ -63,7 +60,6 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
             }
         })
     }
-
 
     public fun getSelectedLocation(): Location? {
         return location
@@ -112,8 +108,12 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
         rl_city.setOnClickListener {
             if (citySelectView.visibility == View.GONE) citySelectView.visibility = View.VISIBLE
         }
+        editSearch.setAdapter(arrayAdapter)
     }
 
+    var arrayData= mutableListOf<PoiItem>()
+    val arrayAdapter=KMAdapter(context,arrayData)
+    
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
         init()
     }
@@ -197,17 +197,17 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
         poiSearch.searchPOIAsyn()
     }
 
-    val arrayAdapter: ArrayAdapter<String> = ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, emptyList())
+    
 
     @SuppressLint("NewApi")
     fun showListPop(lst: List<PoiItem>) {
-        var array = lst.map {
-            it.title
-        }
+//        var array = lst.map {
+//            it.title
+//        }
         editSearch.threshold = 1;
         editSearch.setAdapter(arrayAdapter)
         arrayAdapter.clear()
-        arrayAdapter.addAll(array)
+        arrayAdapter.addAll(lst)
         arrayAdapter.filter.filter(null)
         arrayAdapter.notifyDataSetChanged()
 
