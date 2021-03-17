@@ -36,7 +36,7 @@
             android:paddingTop="18dp"
             android:paddingBottom="18dp"
             android:paddingRight="18dp"
-            android:dropDownHeight="400dp"
+            android:dropDownHeight="200dp"
             android:background="@drawable/edit_back"
             android:hint="输入地址搜索"
             android:focusableInTouchMode="true"

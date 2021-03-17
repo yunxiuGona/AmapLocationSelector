@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.core.widget.doAfterTextChanged
@@ -79,6 +80,15 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
             if (hasFocus)
                 showAroundList(false)
         }
+        editSearch.setOnTouchListener(object : OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                if (event?.action == MotionEvent.ACTION_DOWN) {
+                    showAroundList(false)
+                    doQuerySearchInCity(editSearch.text.toString())
+                }
+                return false
+            }
+        })
         editSearch.doAfterTextChanged {
             if (listenForChanges) doQuerySearchInCity(editSearch.text.toString())
             showAroundList(false)
