@@ -1,17 +1,16 @@
 package com.qcit.location.selector.libary
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.AttributeSet
 import android.util.Log
-import android.view.KeyEvent
 import android.view.View
 import android.widget.*
 import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amap.api.location.AMapLocationClient
 import com.amap.api.location.AMapLocationClientOption
@@ -27,15 +26,14 @@ import com.amap.api.services.poisearch.PoiResult
 import com.amap.api.services.poisearch.PoiSearch
 import com.qcit.location.selector.libary.adapter.LocationSearchAdapter
 import com.qcit.location.selector.libary.models.City
-import com.qcit.location.selector.libary.utils.ExcelUtils
-import com.qcit.location.selector.libary.utils.KeybordUtil
-import com.qcit.location.selector.libary.utils.PingYinUtil
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.runtime.Permission
 import kotlinx.android.synthetic.main.view_selector.view.*
+import java.util.*
+
 
 class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedListener,
-    OnCityClickedListener {
+        OnCityClickedListener {
     private var activity: Activity? = null
     private var amap: AMap? = null
     private var adapter: LocationSearchAdapter? = null
@@ -77,7 +75,14 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
         adapter?.onItemClickedListener = this
         aroundList.adapter = adapter
         requestLocationPermission()
-        editSearch.doAfterTextChanged { if (listenForChanges) doQuerySearchInCity(editSearch.text.toString()) }
+        editSearch.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus)
+                showAroundList(false)
+        }
+        editSearch.doAfterTextChanged {
+            if (listenForChanges) doQuerySearchInCity(editSearch.text.toString())
+            showAroundList(false)
+        }
         rl_bottom.setOnClickListener {
             if (isArounfListShowing()) {
                 showAroundList(false)
@@ -85,10 +90,10 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
         }
         rlMineLocation.setOnClickListener {
             cameraTo(
-                LatLng(
-                    amap?.myLocation?.latitude!!,
-                    amap?.myLocation?.longitude!!
-                )
+                    LatLng(
+                            amap?.myLocation?.latitude!!,
+                            amap?.myLocation?.longitude!!
+                    )
             )
         }
         citySelectView.visibility = View.GONE
@@ -107,15 +112,15 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
     }
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
+            context,
+            attrs,
+            defStyleAttr
     ) {
         init()
     }
 
     constructor(
-        context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
+            context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes) {
         init()
     }
@@ -151,11 +156,11 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
             override fun onPoiItemSearched(p0: PoiItem?, p1: Int) {}
         })
         poiSearch.setBound(
-            PoiSearch.SearchBound(
-                LatLonPoint(latlon.latitude, latlon.longitude),
-                1000,
-                true
-            )
+                PoiSearch.SearchBound(
+                        LatLonPoint(latlon.latitude, latlon.longitude),
+                        1000,
+                        true
+                )
         )
         poiSearch.searchPOIAsyn()
     }
@@ -172,38 +177,41 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
                         val poiItems: List<PoiItem> = result.pois
                         showListPop(poiItems)
                     }
+                } else {
                 }
             }
 
-            override fun onPoiItemSearched(p0: PoiItem?, p1: Int) {}
+            override fun onPoiItemSearched(p0: PoiItem?, p1: Int) {
+
+            }
         })
         poiSearch.searchPOIAsyn()
     }
 
+    val arrayAdapter: ArrayAdapter<String> = ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, emptyList())
+
+    @SuppressLint("NewApi")
     fun showListPop(lst: List<PoiItem>) {
-        var listpopwin = ListPopupWindow(activity!!)
-        var lst_title = lst.map { it.title }
-        listpopwin.setAdapter(
-            ArrayAdapter<String>(
-                context,
-                android.R.layout.simple_list_item_1,
-                lst_title
-            )
-        )
-        listpopwin.anchorView = editSearch
-        listpopwin.isModal = true
-        listpopwin.setOnItemClickListener { parent, view, position, id ->
+        var array = lst.map {
+            it.title
+        }
+        editSearch.threshold = 1;
+        editSearch.setAdapter(arrayAdapter)
+
+
+        arrayAdapter.clear()
+        arrayAdapter.addAll(array)
+        arrayAdapter.filter.filter(null)
+        arrayAdapter.notifyDataSetChanged()
+
+        editSearch.setOnItemClickListener { parent, view, position, id ->
             var item = lst.get(position)
             listenForChanges = false;
             editSearch.setText(item.title, TextView.BufferType.EDITABLE)
             listenForChanges = true;
             cameraTo(LatLng(item.latLonPoint.latitude, item.latLonPoint.longitude))
-            listpopwin.dismiss()
-            KeybordUtil.hideKeyboard(activity)
             doAroundSearch(LatLng(item.latLonPoint.latitude, item.latLonPoint.longitude))
         }
-        listpopwin.show()
-        editSearch.requestFocus()
     }
 
     fun getActivityFromView(): Activity? {
@@ -219,15 +227,15 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
 
     fun requestLocationPermission() {
         AndPermission.with(context)
-            .runtime()
-            .permission(Permission.Group.LOCATION)
-            .onGranted {
-                startLocalMe()
-            }
-            .onDenied {
-                Toast.makeText(activity, "获取权限失败", Toast.LENGTH_SHORT).show()
-            }
-            .start()
+                .runtime()
+                .permission(Permission.Group.LOCATION)
+                .onGranted {
+                    startLocalMe()
+                }
+                .onDenied {
+                    Toast.makeText(activity, "获取权限失败", Toast.LENGTH_SHORT).show()
+                }
+                .start()
     }
 
     private fun startLocalMe() {

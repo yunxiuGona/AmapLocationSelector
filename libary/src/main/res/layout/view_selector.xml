@@ -25,9 +25,31 @@
         android:layout_margin="10dp">
 
 
+
+
+        <AutoCompleteTextView
+            android:id="@+id/editSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingLeft="100dp"
+            android:paddingTop="18dp"
+            android:paddingBottom="18dp"
+            android:paddingRight="18dp"
+            android:dropDownHeight="400dp"
+            android:background="@drawable/edit_back"
+            android:hint="输入地址搜索"
+            android:focusableInTouchMode="true"
+
+            android:singleLine="true"
+            android:textColor="#333333"
+            android:textColorHint="#DDDDDD"
+            android:textSize="14dp" />
+
         <RelativeLayout
             android:id="@+id/rl_city"
             android:layout_width="wrap_content"
+            android:layout_marginLeft="20dp"
             android:layout_height="40dp"
             android:layout_centerVertical="true">
 
@@ -52,21 +74,6 @@
                 android:singleLine="true"
                 android:text="青岛市"></TextView>
         </RelativeLayout>
-
-        <EditText
-            android:id="@+id/editSearch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
-            android:layout_toRightOf="@+id/rl_city"
-            android:background="@drawable/edit_back"
-            android:hint="输入地址搜索"
-            android:padding="12dp"
-            android:singleLine="true"
-            android:textColor="#333333"
-            android:textColorHint="#DDDDDD"
-            android:textSize="14dp" />
 
     </RelativeLayout>
 
