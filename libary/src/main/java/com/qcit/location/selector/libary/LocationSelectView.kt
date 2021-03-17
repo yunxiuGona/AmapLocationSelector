@@ -27,6 +27,7 @@ import com.amap.api.services.poisearch.PoiResult
 import com.amap.api.services.poisearch.PoiSearch
 import com.qcit.location.selector.libary.adapter.LocationSearchAdapter
 import com.qcit.location.selector.libary.models.City
+import com.qcit.location.selector.libary.utils.KeybordUtil
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.runtime.Permission
 import kotlinx.android.synthetic.main.view_selector.view.*
@@ -190,9 +191,7 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
                 } else {
                 }
             }
-
             override fun onPoiItemSearched(p0: PoiItem?, p1: Int) {
-
             }
         })
         poiSearch.searchPOIAsyn()
@@ -207,8 +206,6 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
         }
         editSearch.threshold = 1;
         editSearch.setAdapter(arrayAdapter)
-
-
         arrayAdapter.clear()
         arrayAdapter.addAll(array)
         arrayAdapter.filter.filter(null)
@@ -291,6 +288,7 @@ class LocationSelectView : RelativeLayout, LocationSearchAdapter.OnItemClickedLi
             around_show = true
             aroundList.visibility = View.VISIBLE
             ivExport.setImageResource(R.drawable.ic_arrow_down)
+            KeybordUtil.closeKeybord(activity)
         }
         if (!show) {
             if (!around_show) return
