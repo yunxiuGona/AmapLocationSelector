@@ -1,5 +1,5 @@
 高德地图地址选择器
-AMAP location selectoe
+AMAP location selector
 
 # AmapLocationSelector
 高德地图控制台注册应用，并获取APPKey<br>
