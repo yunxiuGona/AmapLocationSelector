@@ -8,7 +8,7 @@ AMAP location selector
 # AmapLocationSelector使用方法
 1、主Module的 gradle 文件中.
 ```
-implementation 'com.qcit.mapselector:libary:0.4'
+implementation 'com.qcit.mapselector:libary:0.5'
 ```
 
 2、主Module的 AndroidManifest.xml 文件中，<Application>标签中添加高德地图APPKey  
